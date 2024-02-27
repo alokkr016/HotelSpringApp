@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Hotel Management</title>
+</head>
+<body>
+<h1>Hotel Management</h1>
+
+<!-- Create Hotel Form -->
+<form th:action="@{/hotel/create}" method="post" th:object="${hotelRequest}">
+    <label>Hotel Name:</label>
+    <input type="text" th:field="*{name}" required><br>
+    <!-- Add other fields as needed -->
+    <button type="submit">Create Hotel</button>
+</form>
+
+<!-- Display All Hotels -->
+<h2>All Hotels</h2>
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <!-- Add other columns as needed -->
+        <th>Action</th>
+    </tr>
+    <tr th:each="hotel : ${hotels}">
+        <td th:text="${hotel.id}"></td>
+        <td th:text="${hotel.name}"></td>
+        <!-- Add other columns as needed -->
+        <td>
+            <a th:href="@{'/hotel/id/' + ${hotel.id}}">View</a>
+            <span> | </span>
+            <a th:href="@{'/hotel/remove/id/' + ${hotel.id}}" onclick="return confirm('Are you sure?')">Delete</a>
+        </td>
+    </tr>
+</table>
+</body>
+</html>
