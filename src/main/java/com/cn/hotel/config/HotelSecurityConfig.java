@@ -2,9 +2,12 @@ package com.cn.hotel.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,8 +26,7 @@ public class HotelSecurityConfig {
 	{
 		http.csrf().disable()
 				.authorizeHttpRequests()
-				.antMatchers("/hotel/create").hasRole("ADMIN")
-//				.antMatchers("/hotel/**").hasRole("ADMIN") // Regex to give authority to only admin
+				.antMatchers("/user/register").permitAll()
 				.anyRequest()
 				.authenticated()
 				.and()
@@ -34,24 +36,14 @@ public class HotelSecurityConfig {
 	}
 
 	@Bean
-	public UserDetailsService users() {
-		UserDetails user1 = User.builder()
-				.username("tony")
-				.password(passwordEncoder().encode("password"))
-				.roles("NORMAL")
-				.build();
-
-		UserDetails user2 = User.builder()
-				.username("steve")
-				.password(passwordEncoder().encode("nopassword"))
-				.roles("ADMIN")
-				.build();
-
-		return new InMemoryUserDetailsManager(user1, user2);
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+		return authenticationConfiguration.getAuthenticationManager();
 	}
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
+
+
 }
