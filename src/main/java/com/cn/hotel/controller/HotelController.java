@@ -13,11 +13,9 @@ import com.cn.hotel.service.HotelService;
 @RestController
 @RequestMapping("/hotel")
 public class HotelController {
-
 	@Autowired 
 	HotelService hotelService;
 
-	
 	@PostMapping("/create")
 	@PreAuthorize("hasRole('ADMIN')")
 	public void createHotel(@RequestBody HotelRequest hotelRequest)

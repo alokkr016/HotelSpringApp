@@ -23,10 +23,12 @@ public class HotelSecurityConfig {
 	{
 		http.csrf().disable()
 				.authorizeHttpRequests()
+				.antMatchers("/hotel/create").hasRole("ADMIN")
+//				.antMatchers("/hotel/**").hasRole("ADMIN") // Regex to give authority to only admin
 				.anyRequest()
 				.authenticated()
 				.and()
-				.formLogin();
+				.httpBasic();
 		return http.build();
 
 	}
