@@ -11,7 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("user")
+@RequestMapping("/user")
 public class UserController {
     private final UserService userService;
 
@@ -20,9 +20,10 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
+
+    @GetMapping("/getAll")
     @PreAuthorize("hasRole('ADMIN')")
+    @ResponseStatus(HttpStatus.OK)
     public List<User> getAllUsers() {
         return userService.getAllUsers();
     }

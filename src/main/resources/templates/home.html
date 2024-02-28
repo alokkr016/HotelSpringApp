@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .footer,.content{
+            text-align: center;
+            margin-top: 20px;
+            color: #999;
+        }
+
+        li{
+            list-style-type: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div th:fragment="header">
+        <h1>Welcome to our Website!</h1>
+    </div>
+
+    <div th:fragment="content" class="content">
+        <p>Hello, and welcome to our website. We are thrilled to have you here!</p>
+        <!-- Add more content as needed -->
+        <h2>Our APIs</h2>
+        <ul>
+            <li><a href="/hotel/getAll">API 1</a>:Get all hotels</li>
+            <li><a href="/user/getAll">API 2</a>: Get all Users</li>
+            <!-- Add more APIs as needed -->
+        </ul>
+    </div>
+
+    <div th:fragment="footer" class="footer">
+        <p>Thank you for visiting us. Have a great day!</p>
+    </div>
+</div>
+</body>
+</html>
