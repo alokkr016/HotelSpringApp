@@ -38,6 +38,7 @@ public class HotelSecurityConfig {
 		http.csrf().disable()
 				.authorizeHttpRequests()
 				.antMatchers("/user/register").permitAll()
+				.antMatchers("/").authenticated()
 				.and()
 				.rememberMe().userDetailsService(userDetailsService)
 				.and()
@@ -46,12 +47,13 @@ public class HotelSecurityConfig {
 				.permitAll()
 				.and()
 				.logout()
-				.deleteCookies("remember-me");
+				.deleteCookies("remember-me")
+				.and()
+				.oauth2Login()
+				.loginPage("/login");
 		return http.build();
 
 	}
-
-
 
 	@Bean
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
