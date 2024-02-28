@@ -1,5 +1,7 @@
 package com.cn.hotel.config;
 
+import com.cn.hotel.model.User;
+import com.cn.hotel.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,11 +11,18 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -25,6 +34,9 @@ public class HotelSecurityConfig {
 	@Autowired
 	private  UserDetailsService userDetailsService;
 
+	@Autowired
+	private UserRepository userRepository;
+
 	/**
 	 *When implementing the "remember me" functionality in Spring Security, you generally want to avoid intercepting all requests (`anyRequest().authenticated()`), because when a user accesses the application with a remembered session (using "remember me"), they should not be required to authenticate again for every request. Instead, they should be automatically logged in based on the remembered session.
 	 * By specifying `.anyRequest().authenticated()` without any exceptions, you are effectively requiring every request to be authenticated, including requests from remembered sessions. This conflicts with the purpose of the "remember me" functionality, which is to allow users to stay logged in across sessions without re-authenticating.
@@ -33,27 +45,28 @@ public class HotelSecurityConfig {
 	 */
 
 	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception
-	{
-		http.csrf().disable()
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+		http
+				.csrf().disable()
 				.authorizeHttpRequests()
 				.antMatchers("/user/register").permitAll()
-				.antMatchers("/").authenticated()
 				.and()
 				.rememberMe().userDetailsService(userDetailsService)
 				.and()
 				.formLogin()
-				.loginPage("/login")
-				.permitAll()
+				.loginPage("/login").permitAll()
 				.and()
-				.logout()
-				.deleteCookies("remember-me")
+				.logout().deleteCookies("remember-me")
 				.and()
 				.oauth2Login()
-				.loginPage("/login");
-		return http.build();
+				.loginPage("/login")
+				.userInfoEndpoint()
+				.oidcUserService(this.oidcUserService());
 
+		return http.build();
 	}
+
 
 	@Bean
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -63,6 +76,18 @@ public class HotelSecurityConfig {
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
+	}
+
+
+//	@Bean
+	private OAuth2UserService<OidcUserRequest, OidcUser> oidcUserService(){
+		return userRequest -> {
+			OidcUserService oidcUserService = new OidcUserService();
+			OidcUser oidcUser = oidcUserService.loadUser(userRequest);
+			User user = userRepository.findByUsername(oidcUser.getAttribute("email")).orElseThrow(() -> new UsernameNotFoundException("User name not found" +  oidcUser.getAttribute("email")));
+
+			return  new DefaultOidcUser(user.getAuthorities(),userRequest.getIdToken());
+		};
 	}
 
 
