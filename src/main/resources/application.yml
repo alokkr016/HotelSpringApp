@@ -13,6 +13,9 @@ spring:
           google:
             client-id:  631267476183-htomfpjabe6i0fe2rlqk7u3ssutpqbvi.apps.googleusercontent.com
             client-secret:  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
+          github:
+            client-id:  a16f494d7c8ebc0d3597
+            clientSecret:  75da2f6955274a05c49117365bdcd4f89e2e143e
 server:
   port: 8082
 okta:
